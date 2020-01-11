@@ -1,0 +1,10 @@
+[Unit]
+Description=Backlight Follower Daemon
+After=multi-user.target
+
+[Service]
+ExecStart=/usr/local/bin/backlight-follower
+KillMode=process
+
+[Install]
+WantedBy=graphical.target

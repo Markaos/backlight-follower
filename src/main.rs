@@ -1,19 +1,21 @@
 extern crate inotify;
 
-use inotify::{
-    WatchMask,
-    Inotify,
-};
-
-use std::sync::Arc;
-use std::thread;
+use std::fs::File;
+use std::io::{Read, Seek, SeekFrom};
 use std::process::Command;
 use std::str::FromStr;
-use std::fs::File;
-use std::io::{Seek, SeekFrom, Read};
+use std::sync::Arc;
 use std::sync::mpsc::channel;
-use std::time::Duration;
+use std::thread;
+
+use inotify::{
+    Inotify,
+    WatchMask,
+};
+
 use crate::Message::ChangeBrightness;
+
+mod timer;
 
 struct Backlight {
     min: i32,
@@ -24,7 +26,6 @@ struct Backlight {
 
 enum Message {
     ChangeBrightness(i32),
-    SetTimer(i32),
     Alarm,
 }
 
@@ -72,37 +73,10 @@ fn main() {
     let (tx, rx) = channel();
     let cloned_tx = tx.clone();
     thread::spawn(move || {
-        let (timer_tx, timer_rx) = channel();
-        thread::spawn(move || {
-            loop {
-                let mut time = 0;
-                match timer_rx.recv() {
-                    Ok(message) => match message {
-                        Message::SetTimer(dur) => {
-                            time = dur;
-                        }
-                        _ => {}
-                    }
-                    _ => {}
-                }
-                loop {
-                    match timer_rx.recv_timeout(Duration::from_millis(time as u64)) {
-                        Ok(message) => match message {
-                            Message::SetTimer(dur) => {
-                                time = dur;
-                                continue;
-                            }
-                            _ => {}
-                        }
-
-                        _ => {
-                            cloned_tx.send(Message::Alarm).unwrap();
-                            break;
-                        }
-                    }
-                }
-            }
+        let timer = timer::Timer::new(move || {
+            cloned_tx.send(Message::Alarm).unwrap();
         });
+
         let mut brightness = 0;
         loop {
             match rx.recv() {
@@ -110,7 +84,7 @@ fn main() {
                     match message {
                         Message::ChangeBrightness(value) => {
                             brightness = value;
-                            timer_tx.send(Message::SetTimer(100)).unwrap();
+                            timer.set(100);
                         }
 
                         Message::Alarm => {
@@ -126,7 +100,6 @@ fn main() {
                                 .status()
                                 .expect("Something went wrong with the output update command");
                         }
-                        _ => { /* WHAT??? */ }
                     }
                 }
                 Err(_e) => {}

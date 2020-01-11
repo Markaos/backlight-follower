@@ -29,29 +29,6 @@ enum Message {
     Alarm,
 }
 
-fn read_backlight(file: &mut File) -> i32 {
-    let mut buffer: Vec<u8> = Vec::new();
-
-    file.seek(SeekFrom::Start(0))
-        .expect("Couldn't seek");
-    file.read_to_end(&mut buffer)
-        .expect("Couldn't read input file");
-
-    buffer.pop(); // Remove \n
-
-    let string = String::from_utf8(buffer)
-        .expect("Failed to parse the file");
-
-    return i32::from_str(string.as_str()).expect("Not a number...");
-}
-
-fn convert_levels(level: i32, input: &Backlight, output: &Backlight) -> i32 {
-    return (
-        (level as f32 - input.min as f32) / (input.max - input.min) as f32
-            * output.max as f32 + output.min as f32
-    ) as i32
-}
-
 fn main() {
     let input = Backlight{
         min: 1,
@@ -126,4 +103,27 @@ fn main() {
             tx.send(ChangeBrightness(output_value)).unwrap();
         }
     }
+}
+
+fn read_backlight(file: &mut File) -> i32 {
+    let mut buffer: Vec<u8> = Vec::new();
+
+    file.seek(SeekFrom::Start(0))
+        .expect("Couldn't seek");
+    file.read_to_end(&mut buffer)
+        .expect("Couldn't read input file");
+
+    buffer.pop(); // Remove \n
+
+    let string = String::from_utf8(buffer)
+        .expect("Failed to parse the file");
+
+    return i32::from_str(string.as_str()).expect("Not a number...");
+}
+
+fn convert_levels(level: i32, input: &Backlight, output: &Backlight) -> i32 {
+    return (
+        (level as f32 - input.min as f32) / (input.max - input.min) as f32
+            * output.max as f32 + output.min as f32
+    ) as i32
 }

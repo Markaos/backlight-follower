@@ -3,6 +3,7 @@ Description=Backlight Follower Daemon
 After=multi-user.target
 
 [Service]
+ExecStartPre=/usr/bin/modprobe i2c-dev
 ExecStart=/usr/local/bin/backlight-follower
 KillMode=process
 

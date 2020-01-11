@@ -1,4 +1,5 @@
 extern crate inotify;
+extern crate ini;
 
 use std::fs::File;
 use std::io::{Read, Seek, SeekFrom};
@@ -12,6 +13,8 @@ use inotify::{
     Inotify,
     WatchMask,
 };
+
+use ini::Ini;
 
 use crate::Message::ChangeBrightness;
 
@@ -30,19 +33,7 @@ enum Message {
 }
 
 fn main() {
-    let input = Backlight{
-        min: 1,
-        max: 49,
-        path: Option::from(String::from("/sys/class/backlight/acpi_video0/brightness")),
-        update_command: Option::None,
-    };
-
-    let output_raw = Backlight{
-        min: 0,
-        max: 100,
-        path: Option::None,
-        update_command: Option::from(String::from("ddcutil -b 7 setvcp 10")),
-    };
+    let (input, output_raw) = parse_conf("/etc/backlight-follower.conf");
 
     let output = Arc::new(output_raw);
     let output_cloned = output.clone();
@@ -102,6 +93,50 @@ fn main() {
             let output_value = convert_levels(read_backlight(&mut file), &input, &output);
             tx.send(ChangeBrightness(output_value)).unwrap();
         }
+    }
+}
+
+fn parse_conf(path: &str) -> (Backlight, Backlight) {
+    let ini = Ini::load_from_file(path)
+        .expect(format!("Couldn't load configuration file ({})", path).as_str());
+
+    let input = parse_backlight(&ini, "input");
+    let output = parse_backlight(&ini, "output");
+
+    (input, output)
+}
+
+fn parse_backlight(ini: &Ini, section_name: &str) -> Backlight {
+    let section = ini.section(Some(section_name))
+        .expect(format!("Configuration file doesn't contain section {}", section_name).as_str());
+
+    let min = i32::from_str(section.get("min")
+        .expect(format!("Backlight must have attribute min in section {}", section_name).as_str())
+    ).expect(format!("Invalid number format in attribute min in section {}", section_name).as_str());
+
+    let max = i32::from_str(section.get("max")
+        .expect(format!("Backlight must have attribute max in section {}", section_name).as_str())
+    ).expect(format!("Invalid number format in attribute max in section {}", section_name).as_str());
+
+    let path = match section.get("path") {
+        Some(string) => {
+            Some(string.to_owned())
+        }
+        None => None
+    };
+
+    let command = match section.get("update_command") {
+        Some(string) => {
+            Some(string.to_owned())
+        }
+        None => None
+    };
+
+    Backlight {
+        min,
+        max,
+        path,
+        update_command: command
     }
 }
 

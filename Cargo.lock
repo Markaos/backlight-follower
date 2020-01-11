@@ -5,6 +5,7 @@ name = "backlight-follower"
 version = "0.1.0"
 dependencies = [
  "inotify 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rust-ini 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -127,6 +128,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "multimap"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "serde 1.0.104 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "net2"
 version = "0.2.33"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -139,6 +148,19 @@ dependencies = [
 [[package]]
 name = "pin-project-lite"
 version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "rust-ini"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "multimap 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "serde"
+version = "1.0.104"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
@@ -211,8 +233,11 @@ dependencies = [
 "checksum log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)" = "14b6052be84e6b71ab17edffc2eeabf5c2c3ae1fdb464aae35ac50c67a44e1f7"
 "checksum mio 0.6.21 (registry+https://github.com/rust-lang/crates.io-index)" = "302dec22bcf6bae6dfb69c647187f4b4d0fb6f535521f7bc022430ce8e12008f"
 "checksum miow 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "8c1f2f3b1cf331de6896aabf6e9d55dca90356cc9960cca7eaaf408a355ae919"
+"checksum multimap 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)" = "a97fbd5d00e0e37bfb10f433af8f5aaf631e739368dc9fc28286ca81ca4948dc"
 "checksum net2 0.2.33 (registry+https://github.com/rust-lang/crates.io-index)" = "42550d9fb7b6684a6d404d9fa7250c2eb2646df731d1c06afc06dcee9e1bcf88"
 "checksum pin-project-lite 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)" = "e8822eb8bb72452f038ebf6048efa02c3fe22bf83f76519c9583e47fc194a422"
+"checksum rust-ini 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)" = "0c96a7d6722944454c68ff2ba2a252a4e9b0635c03dd510fdf482a2c8981cbf2"
+"checksum serde 1.0.104 (registry+https://github.com/rust-lang/crates.io-index)" = "414115f25f818d7dfccec8ee535d76949ae78584fc4f79a6f45a904bf8ab4449"
 "checksum slab 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)" = "c111b5bd5695e56cffe5129854aa230b39c93a305372fdbb2668ca2394eea9f8"
 "checksum tokio 0.2.9 (registry+https://github.com/rust-lang/crates.io-index)" = "ffa2fdcfa937b20cb3c822a635ceecd5fc1a27a6a474527e5516aa24b8c8820a"
 "checksum winapi 0.2.8 (registry+https://github.com/rust-lang/crates.io-index)" = "167dc9d6949a9b857f3451275e911c3f44255842c1f7a76f33c55103a909087a"

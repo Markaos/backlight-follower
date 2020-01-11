@@ -8,4 +8,5 @@ edition = "2018"
 
 [dependencies]
 inotify = "0.8"
+rust-ini = "0.14"
 

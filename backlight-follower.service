@@ -6,6 +6,3 @@ After=multi-user.target
 ExecStartPre=/usr/bin/modprobe i2c-dev
 ExecStart=/usr/local/bin/backlight-follower
 KillMode=process
-
-[Install]
-WantedBy=graphical.target
